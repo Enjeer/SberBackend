@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 import os
+import logging
 
 app = FastAPI()
 
@@ -15,7 +16,7 @@ app.add_middleware(
 )
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL = "tiiuae/falcon-7b-instruct"
+HF_MODEL = "tiiuae/falcon-1b-instruct"
 
 class Message(BaseModel):
     text: str
@@ -28,7 +29,7 @@ async def chat(message: Message):
     payload = {
         "inputs": message.text,
         "parameters": {
-            "max_new_tokens": 100,
+            "max_new_tokens": 200,
             "temperature": 0.7,
             "do_sample": True
         }
@@ -42,9 +43,11 @@ async def chat(message: Message):
         )
 
     data = response.json()
+
     if isinstance(data, list) and "generated_text" in data[0]:
         generated_text = data[0]["generated_text"]
     else:
-        generated_text = "Ошибка генерации ответа."
+        logging.error(f"HuggingFace API error response: {data}")
+        generated_text = "Извините, сейчас не могу сгенерировать ответ."
 
     return {"reply": generated_text}
