@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL = "EleutherAI/gpt-neo-1.3B"
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
 class Message(BaseModel):
     text: str
