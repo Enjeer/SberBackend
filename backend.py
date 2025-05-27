@@ -1,25 +1,4 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import httpx
-import os
 import logging
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://your-frontend-domain.com"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL = "gpt2"
-
-class Message(BaseModel):
-    text: str
 
 @app.post("/chat")
 async def chat(message: Message):
@@ -42,12 +21,21 @@ async def chat(message: Message):
             json=payload
         )
 
-    data = response.json()
+        content = response.content
+        text = response.text
+        status_code = response.status_code
+        logging.info(f"HF API response status: {status_code}")
+        logging.info(f"HF API response content: {text}")
+
+        try:
+            data = response.json()
+        except Exception as e:
+            logging.error(f"JSON decode error: {e}")
+            return {"reply": "Ошибка при обработке ответа от модели."}
 
     if isinstance(data, list) and "generated_text" in data[0]:
         generated_text = data[0]["generated_text"]
     else:
-        logging.error(f"HuggingFace API error response: {data}")
-        generated_text = "Извините, сейчас не могу сгенерировать ответ."
+        generated_text = "Ошибка генерации ответа."
 
     return {"reply": generated_text}
