@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL = "tiiuae/falcon-1b-instruct"
+HF_MODEL = "gpt2"
 
 class Message(BaseModel):
     text: str
