@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+HF_MODEL = "CohereLabs/c4ai-command-r-plus-08-2024"
 
 class Message(BaseModel):
     text: str
