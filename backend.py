@@ -6,7 +6,6 @@ import os
 
 app = FastAPI()
 
-# Разрешаем запросы с твоего фронта на localhost:3000 и с фронта в проде (замени на свой фронт URL)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "https://your-frontend-domain.com"],
@@ -15,8 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-HF_API_TOKEN = os.getenv("HF_API_TOKEN")  # Установи в Render environment variables
-HF_MODEL = "tiiuae/falcon-7b-instruct"  # Обученная Falcon 7B модель с HuggingFace Hub
+HF_API_TOKEN = os.getenv("HF_API_TOKEN")
+HF_MODEL = "tiiuae/falcon-7b-instruct"
 
 class Message(BaseModel):
     text: str
@@ -43,7 +42,6 @@ async def chat(message: Message):
         )
 
     data = response.json()
-    # Обработка формата ответа HuggingFace Inference API для текстовых моделей
     if isinstance(data, list) and "generated_text" in data[0]:
         generated_text = data[0]["generated_text"]
     else:
