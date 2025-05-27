@@ -41,9 +41,19 @@ async def chat(message: Message):
             headers=headers,
             json=payload
         )
+    
+    # Сначала проверим статус и выведем ответ для диагностики
+    if response.status_code != 200:
+        logging.error(f"HuggingFace API returned status {response.status_code}: {response.text}")
+        return {"error": f"HuggingFace API returned status {response.status_code}", "detail": response.text}
 
-    data = response.json()
+    try:
+        data = response.json()
+    except Exception as e:
+        logging.error(f"Failed to parse JSON from HuggingFace response: {e}. Raw response: {response.text}")
+        return {"error": "Failed to parse JSON from HuggingFace response", "detail": response.text}
 
     # Возвращаем весь ответ от HF в поле "hf_response"
     return {"hf_response": data}
+
 
