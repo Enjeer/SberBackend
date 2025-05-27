@@ -1,3 +1,6 @@
+
+print("backend.py loaded")
+from fastapi import FastAPI
 import logging
 
 @app.post("/chat")
